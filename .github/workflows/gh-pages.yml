@@ -48,6 +48,7 @@ jobs:
         run: |
           mkdir -p ./assets/fonts
           curl -L https://github.com/Myriad-Dreamin/shiroa/releases/download/v0.1.5/source-han-serif-font-assets.tar.gz | tar -xvz -C assets/fonts
+          cp src/assets/fonts/MapleMono-NF-CN-SemiBold.ttf assets/fonts/
       - run: pnpm install
       # - name: Pull Data from Backend (Optional)
       #   run: pnpm run pull-data
