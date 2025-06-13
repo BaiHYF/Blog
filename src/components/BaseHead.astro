@@ -17,13 +17,13 @@ interface Props {
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = "/blog-heading.webp" } = Astro.props;
+const { title, description, image = "" } = Astro.props;
 ---
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="icon" type="image/svg+xml" href={`${kUrlBase}/0612_8.png`} />
+<link rel="icon" type="image/png" href={`${kUrlBase}/0612_8.png`} />
 <link rel="sitemap" href={`${kUrlBase}/sitemap-index.xml`} />
 <link
   rel="alternate"

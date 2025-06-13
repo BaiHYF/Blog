@@ -54,6 +54,8 @@
   golang: "Golang",
   typst: "Typst",
   misc: "Miscellaneous",
+  murmur: "碎碎念",
+  gamedev: "Game Dev",
 )
 
 #let archive-tags = (

@@ -2,7 +2,7 @@
 #show: main.with(
   title: "Test astro-typst",
   desc: [This is a test post.],
-  date: "2025-04-25",
+  date: "2001-01-01",
   tags: (
     blog-tags.misc,
   ),

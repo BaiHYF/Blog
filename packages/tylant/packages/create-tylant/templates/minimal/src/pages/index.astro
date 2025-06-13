@@ -21,10 +21,11 @@ import AboutContent from "../../content/other/about.typ?html&body";
 import "$styles/IndexPostList.css";
 
 const posts = (await getCollection("blog")).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+  (a: { data: { date: number } }, b: { data: { date: number } }) =>
+    b.data.date.valueOf() - a.data.date.valueOf()
 );
 
-const recent5Posts = posts.slice(0, 5);
+const recent3Posts = posts.slice(0, 3);
 ---
 
 <!doctype html>
@@ -67,20 +68,30 @@ const recent5Posts = posts.slice(0, 5);
         <h2>Recent Posts</h2>
         <ul class="accent block-list posts">
           {
-            recent5Posts.map((post) => (
-              <li>
-                <a class="heading" href={`${kUrlBase}/article/${post.id}/`}>
-                  <h2>
-                    <span class="title">{post.data.title}</span>
-                  </h2>
-                  <span class="date">
-                    <FormattedDate date={post.data.date} />
-                  </span>
-                </a>
-                {post.data.tags && <TagList tags={post.data.tags} />}
-                {post.data.description || ""}
-              </li>
-            ))
+            recent3Posts.map(
+              (post: {
+                id: any;
+                data: {
+                  title: unknown;
+                  date: Date;
+                  tags: string[];
+                  description: any;
+                };
+              }) => (
+                <li>
+                  <a class="heading" href={`${kUrlBase}/article/${post.id}/`}>
+                    <h2>
+                      <span class="title">{post.data.title}</span>
+                    </h2>
+                    <span class="date">
+                      <FormattedDate date={post.data.date} />
+                    </span>
+                  </a>
+                  {post.data.tags && <TagList tags={post.data.tags} />}
+                  {post.data.description || ""}
+                </li>
+              )
+            )
           }
         </ul>
       </section>
