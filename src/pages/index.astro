@@ -7,6 +7,7 @@ import BaseHead from "$components/BaseHead.astro";
 import Header from "$components/Header.astro";
 import Footer from "$components/Footer.astro";
 import FormattedDate from "$components/FormattedDate.astro";
+import SpineModel from "$components/SpineModel.astro";
 
 import {
   kSiteTitle,
@@ -20,6 +21,8 @@ import AboutContent from "../../content/other/about.typ?html&body";
 // import IndexContent from "../../content/other/index.typ?html&body";
 
 import "$styles/IndexPostList.css";
+import "$styles/spine-player.css";
+import "../../public/js/spine-player.js";
 
 const posts = (await getCollection("blog")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
@@ -55,9 +58,23 @@ const recent5Posts = posts.slice(0, 5);
       .monthly li {
         font-style: italic;
       }
+      /* Default desktop styles */
+      #move-container {
+        width: 180px;
+        height: 180px;
+      }
+
+      /* Mobile styles */
+      @media (max-width: 800px) {
+        #move-container {
+          width: 90px;
+          height: 90px;
+        }
+      }
     </style>
   </head>
   <body>
+    <SpineModel />
     <Header />
     <main>
       <section aria-label="Prelude">
