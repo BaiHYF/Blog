@@ -15,7 +15,8 @@
 
   在搭建博客的过程中，我经历了不少尝试与取舍，从工具选择到平台部署，从内容规划到样式设计，这个过程本身就让我对技术、表达以及个人数字空间的理解更为深入。最终，我选择了当前这个版本：一个托管于海外服务器，并没有独特的域名，访问速度在国内可能并不理想的简单站点。
 
-  // 但它承载了我真实的思考与持续的探索。
+  省流：
+  本站基于Astro构建，使用了#link("https://github.com/Myriad-Dreamin/tylant")[一个基于Typst的模板]，托管在Github Page上，因此也不保证中国大陆用户的可访问性。。
 ]
 
 // #let self-intro = [
@@ -54,8 +55,6 @@
   我将它们汇集在这里，作为某种存在的证据。
 ]
 
-
-= About This Site
 #if sys-is-html-target {
   // 添加脚本部分
   show raw: it => html.elem("script", it.text)
@@ -80,15 +79,65 @@
       observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     ```
   }
+  show raw: it => html.elem("style", it.text)
+  {
+    ```css
+    .blog-desc .thumbnail-container {
+      flex: 0 0 22em;
+      border-radius: 0.5em;
+      margin-left: 2em;
+      margin-block-start: 0.5em;
+      margin-block-end: 2em;
+      gap: 1em;
+    }
+
+    .blog-desc .thumbnail-container,
+    .blog-desc .thumbnail {
+      float: right;
+      width: 150%;
+      height: 150%;
+      margin-right: 3em; margin-left: 3em;
+    }
+
+    .thumbnail {
+      --thumbnail-fg: var(--main-color);
+      --thumbnail-bg: transparent;
+    }
+
+    .dark .thumbnail {
+      --thumbnail-bg: var(--main-color);
+      --thumbnail-fg: transparent;
+    }
+
+    @media (max-width: 800px) {
+      .blog-desc {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .blog-desc .thumbnail-container {
+        margin-left: 1em;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+      }
+      .blog-desc .thumbnail-container,
+      .blog-desc .thumbnail {
+        width: 90%;
+        height: 90%;
+        margin-left: 5em;
+      }
+    }
+    ```
+  }
 
 
   let div = html.elem.with("div")
   let img = html.elem.with("img")
 
-  // 添加唯一 ID 的图片元素
   let artwork = html.elem(
     "img",
     attrs: (
+      class: "thumbnail",
       id: "theme-image",
       src: "/blog//images/0612_10.png", // 默认深色模式
       alt: "Irene",
@@ -96,23 +145,19 @@
     ),
   )
 
-  // 布局容器
   div(
     attrs: (
+      class: "blog-desc",
       style: "display: flex; align-items: flex-start; justify-content: space-between; gap: 1em;",
     ),
     {
-      // 文字部分
       div(
         attrs: (style: "margin-left: 2em"),
         blog-description,
       )
-
-      // 图片容器
       context div(
         attrs: (
           class: "thumbnail-container",
-          style: "width: 150%; height: 150%; margin-right: 5em;",
         ),
         artwork,
       )
