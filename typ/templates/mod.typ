@@ -57,6 +57,7 @@
   murmur: "碎碎念",
   gamedev: "Graphic",
   web: "Web",
+  exam: "Exam",
 )
 
 #let archive-tags = (
