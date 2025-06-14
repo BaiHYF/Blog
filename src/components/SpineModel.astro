@@ -6,8 +6,9 @@ import "$styles/spine-player.css";
 <style>
   /* Default desktop styles */
   #move-container {
-    width: 180px;
-    height: 180px;
+    display: none;
+    width: 150px;
+    height: 150px;
     position: fixed;
     z-index: 999;
     right: 10em;
@@ -17,8 +18,8 @@ import "$styles/spine-player.css";
   /* Mobile styles */
   @media (max-width: 800px) {
     #move-container {
-      width: 150px;
-      height: 150px;
+      width: 100px;
+      height: 100px;
       position: fixed;
       z-index: 999;
       right: 0em;
@@ -44,12 +45,31 @@ import "$styles/spine-player.css";
         padRight: "2%",
         padTop: "1%",
         padBottom: "1%",
-        // debugRender: true,
       },
       animation: "Relax",
       showControls: false,
+
+      // Execute after the player is ready
       success: function (player: any) {
         player.skeleton.scaleX = -1;
+
+        let isInteracting = false;
+
+        const container = document.getElementById("container")!;
+        container.addEventListener("click", () => {
+          if (isInteracting) {
+            return;
+          }
+          isInteracting = true;
+
+          player.animationState.setAnimation(0, "Interact");
+          player.animationState.addAnimation(0, "Relax", true, 0);
+        });
+
+        var moveContainer = document.getElementById("move-container");
+        if (moveContainer) {
+          moveContainer.style.display = "block";
+        }
       },
     });
     console.log("spine player ready");

@@ -21,8 +21,6 @@ import AboutContent from "../../content/other/about.typ?html&body";
 // import IndexContent from "../../content/other/index.typ?html&body";
 
 import "$styles/IndexPostList.css";
-import "$styles/spine-player.css";
-import "../../public/js/spine-player.js";
 
 const posts = (await getCollection("blog")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
