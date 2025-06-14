@@ -39,7 +39,6 @@ import "$styles/spine-player.css";
       premultipliedAlpha: true,
       backgroundColor: "#00000000",
       alpha: true,
-      flip: true,
       viewport: {
         padLeft: "2%",
         padRight: "2%",
@@ -53,15 +52,8 @@ import "$styles/spine-player.css";
       success: function (player: any) {
         player.skeleton.scaleX = -1;
 
-        let isInteracting = false;
-
         const container = document.getElementById("container")!;
         container.addEventListener("click", () => {
-          if (isInteracting) {
-            return;
-          }
-          isInteracting = true;
-
           player.animationState.setAnimation(0, "Interact");
           player.animationState.addAnimation(0, "Relax", true, 0);
         });
