@@ -2,7 +2,7 @@
 #show: main.with(
   title: "Compiler CheetSheet IV",
   desc: [编译原理课程考试前的一些总结. Ch4],
-  date: "2025-06-17",
+  date: "2025-06-18",
   tags: (
     blog-tags.exam,
     blog-tags.compiler,
@@ -11,6 +11,19 @@
 )
 
 = Chapter04语法分析
+
+考点:
++ LL(1)分析
+  - 消除左公因子、左递归、二义性等情况
+  - 求FIRST集、FOLLOW集
+  - 构造LL(1)分析表
+  - 进行LL(1)分析
++ 进行LR分析——LR(0)、SLR(1)、LR(1)、LALR(1)
+  - 构建项目集、CLOUSRE函数、GOTO函数、DFA
+  - 构建LR分析表
+  - 进行LR分析
+  - 能分辨出一个文法是属于哪种LR文法
+
 
 == 题型1-自顶向下分析-改写文法
 为了让语法分析的推到过程能顺利进行，我们需要保证文法满足一些性质。如无左公因子，无左递归等。
@@ -354,4 +367,231 @@ abba及aabb分别进行LL(1)预测分析，写出分析的全过程（表格形�
   [15], [\$(L], [( #sym.equiv )], [)], [Shift],
   [16], [\$(L)], [], [], [Reduce S->(L)],
   [17], [\$S], [], [], [ACCEPT],
+)
+
+== 题型6-LR(0)分析
+LR语法分析器通过维护一些状态，用这些状态来表明我们在语法分析过程中
+所处的位置，从而做出shift或reduce决定。
+
+大致流程:
++ 对文法进行拓广:对文法G[S],增加一条产生式S'→S,拓广为文法G'[S']
++ 根据产生式构造LR(0)项目集:CLOSURE函数和GOTO函数
++ 根据项目集构造LR(0)DFA
++ 根据LR(0)DFA构造LR(0)分析表
++ 根据LR(0)分析表对输入串进行LR(0)分析
+
+状态由项目[item]集表示:在文法G中每个产生式的右部适当位置添加一个圆点构成项目
+
++ 移进项目[shift item]
+  形如A->α•аβ,即圆点后面为终结符的项目.分析时把а移进符号栈[Shift]
++ 待约项目[reduce-expected item]
+  形如A->α•Bβ,即圆点后面为非终结符的项目.期待着继续分析过程中首先能归约得到B
++ 归约项目[reduce item]
+  形如A→α•,即圆点在最右端的项目.表明该产生式的右部已分析完，句柄已形成，可以把α归约为A[Reduce]
++ 接受项目[accept item]
+  S'→S•,表明输入串可归约为文法开始符，分析结束
+
+- LR(0)扩广文法:在原有文法上，新增开始符号S'和产生式S'→S
+- CLOSURE函数(闭包):
+  项目集I的闭包CLOSURE(I)定义为:
+  + I的项目均在CLOSURE(I)中
+  + 若A->α•Bβ属于CLOSURE(I),则每一形如B→•r的项目也属于CLOSURE(I)
+  + 迭代直到收敛
+  - CLOSURE(I)作为DFA的一个状态
+- 状态转换函数GOTO(I, X)=CLOSURE(J), J = {任何形如A->αX•β的项目│A->α•Xβ∈I}
+
+例子:G[S']: S'->E, E->aA|bB, A->cA|d, B->cB|d
+
+状态集I={S'->•E, E->•aA, E->•bB}
+
+有
+```
+# GOTO(I, X)即I中项目“移进”X的到的项目的闭包
+GOTO(I, E) = CLOSURE(S'->E•) = {S'->E•},
+GOTO(I, a) = CLOSURE(E->a•A) = {E->a•A, A->•cA, A->•d}
+GOTO(I, b) = CLOSURE(E->b•B) = {E->b•B, B->•cB, B->•d}
+```
+
+LR(0)状态DFA
+- 构造初始状态I0=CLOSURE({S'→•S})
+- 然后逐步构造其他状态
+- 若有GOTO(Ii, X)=Ij,的DFA中添加有向边Ii->Ij, X为边上的标签
+
+例子:拓广文法G':S'→E,E→aA|bB,A→cA|d,B→cB|d;构造以LR(0)项目集为状态的DFA
++ 计算状态(闭包)
+  ```
+  I0=CLOSURE(S'->•E)={S'->•E, E->•aA, E->•bB}
+  GOTO(I0, E)=CLOSURE(S'->E•)={S'->E•}=I1
+  GOTO(I0, a)=CLOSURE(E->a•A)={E->a•A, A->•cA, A->•d}=I2
+  GOTO(I0, b)=CLOSURE(E->b•B)={E->b•B, B->•cB, B->•d}=I3
+  GOTO(I2, A)=CLOSURE(E->aA•)={E->aA•}=I4
+  GOTO(I2, c)=CLOSURE(A->c•A)={A->c•A, A->•cA, A->•d}=I5
+  GOTO(I2, d)=CLOSURE(A->d•)={A->d•}=I6
+  GOTO(I3, B)=CLOSURE(E->bB•)={E->bB•}=I7
+  GOTO(I3, c)=CLOSURE(B->c•B)={B->c•B, B->•cB, B->•d}=I8
+  GOTO(I3, d)=CLOSURE(B->d•)={B->d•}=I9
+  GOTO(I5, A)=CLOSURE(A->cA•)={A->cA•}=I10
+  GOTO(I5, c)=CLOSURE(A->c•A)=I5
+  GOTO(I5, d)=CLOSURE(A->d•)=I6
+  GOTO(I8, B)=CLOSURE(B->cB•)={B->cB•}=I11
+  GOTO(I8, c)=CLOSURE(B->c•B)=I8
+  GOTO(I8, d)=CLOSURE(B->d•)=I9
+  ```
++ 画出DFA
+  #figure(image("../../public/blog-resources/image-32.png"))
+
+LR(0)分析表的构造: ACTION与GOTO
++ 对于移进项目形如A->α•аβ, 若GOTO(k,a)=j，则置ACTION[k,a]=Sj (k和j都是状态编号)
++ 对于待约项目形如A->α•Bβ，若GOTO(k,B)=j，则置GOTO[k,B]=j
++ 对于规约项目形如A→α•，产生式A→α的编号为j，则对任何α，置ACTION[k,a]=rj，归约
++ 对于接受项目形如S'->S•，则置ACTION[k,\$]=ACCEPT
+
+例子:对上一个例子继续构造LR(0)分析表
+#figure(image("../../public/blog-resources/image-33.png"))
+
+LR(0)分析器的工作流程:
+- LR(0)分析器通过`状态栈 + 符号栈 + 输入串`，结合ACTION表和GOTO表,来决定每一步操作(移进、归约、接受或报错)。
+- 核心机制：根据“状态栈栈顶状态”和“当前输入符号”查 ACTION 表，决定动作。
++ 移进操作[Shift]
+  - 条件：ACTION[S, a] = Sj,即当前状态为S，当前输入符号为a，ACTION 表给出的是状态Sj
+  - 动作: 将a移进符号栈，将Sj压入状态栈，并移进到状态Sj
++ 归约操作[Reduce]
+  - 条件：ACTION[S, a] = rj，其中a是终结符或\$（使用第j个产生式A->β）
+  - 动作:
+    + 把符号栈和状态栈的 顶端各弹出|β|个元素(产生式右部元素数量)
+    + 把非终结符A压入符号栈
+    + 查GOTO[Q, A] = P，将P压入状态栈(其中Q是弹出后新的栈顶状态)
+    + _同进同出_（两个栈同步弹出、同步压入）
++ 接受[Accept]
+  + 条件：ACTION[S, \$] = acc
++ 报错[Error]
+  + 条件：ACTION[S, a] 是空白
+
+例题:
+#figure(
+  image("../../public/blog-resources/image-33.png"),
+  caption: [根据文法规则与分析表对输入串`bccd$`进行LR(0)分析],
+)
+解答:
+#table(
+  columns: (auto, auto, auto, auto, auto, auto),
+  table.header("步骤", "状态栈", "符号栈", "输入串", "ACTION", "GOTO"),
+  [1], [0], [\$], [bccd\$], [S3], [],
+  [2], [03], [\$b], [ccd\$], [S8], [],
+  [3], [038], [\$bc], [cd\$], [S8], [],
+  [4], [0388], [\$bcc], [d\$], [S9], [],
+  [5], [03889], [\$bccd], [\$], [r6(B->d)], [11],
+  [6], [0388(11)], [\$bccB], [\$], [r5(B->cB)], [11],
+  [7], [038(11)], [\$bcB], [\$], [r5(B->cB)], [7],
+  [8], [037], [\$bB], [\$], [r2(E->bB)], [1],
+  [9], [01], [\$E], [\$], [acc], [],
+)
+
+如果该文法LR(0)DFA中没有任何_规约-规约冲突_，则该文法属于LR(0)文法
+
+SLR(1)分析
+若LR(1)冲突项对应产生式左部的两个非终结符的FOLLOW集的交集为空，则该文法属于SLR(1)文法
+
+== 题型7-LR(1)分析
+LR(1)分析的基本思想:在LR(0)的基础上设置展望信息(look-ahead)
+- LR(1)方法按每个具体的句型设置展望信息
+- 例：如果存在如下句型...αAa...，...βAb..，...γAc...，则
+  + FOLLOW(A)={a,b,c}
+  + 处理到句型...αA,只当输入符号为a时归约
+  + 处理到句型...βA,只当输入符号为b时归约
+  + 处理到句型...γA,只当输入符号为c时归约
+
+LR(1)项目形如：[A->α•β, a]
+- A->α•β是文法产生式
+- · 表示分析到的位置（项目的点）
+- a是展望符（lookahead），表示在归约A->α时，期望后面跟着的终结符号
+
+LR(1)的初始项目为[S'->•S, \$]，初始状态为I0=CLOSURE([S'->•S, \$])
+
+求闭包:对项集I，重复以下操作直到不变：
+- 对于每一个项 [A->α·Bβ, a]中，若·后是非终结符B，则：
+- 对B的每个产生式 B → γ
+- 对每个 b ∈ FIRST(βa)，加入新项 [B → ·γ, b]
+注意：展望符是从 βa 推导出 FIRST 集合！
+
+其他地方与LR(0)类似
+
+例子：文法G'[S']:
+```
+0: S'->S
+1: S->aAd
+2: S->bAc
+3: S->aec
+4: S->bed
+5: A->e
+```
+构造状态及DFA为
+```
+I0=CLOSURE(S'->•S,$)={
+  [S'->•S, $],
+  # 此处FIRST($)={$}
+  [S->•aAd, $],
+  [S->•bAc, $],
+  [S->•aec, $],
+  [S->•bed, $],
+}
+I1=GOTO(I0, S)=CLOSURE(S'->S•,$)={[S'->S•, $]}
+I2=GOTO(I0, a)=CLOSURE([S->a•Ad, $], [S->a•ec, $])={
+  [S->a•Ad, $],
+  # FIRST(d$)={d}
+  [A->•e, d],
+  [S->a•ec, $],
+}
+I3=GOTO(I0, b)=CLOSURE([S->b•Ac, $], [S->b•ed, $])={
+  [S->b•Ac, $],
+  # FIRST(c$)={c},
+  [A->•e, c],
+  [S->b•ed, $],
+}
+I4=GOTO(I2, A)=CLOSURE([S->aA•d, $])={
+  [S->aA•d, $]
+}
+I5=GOTO(I2, e)=CLOSURE([S->ae•c, $], [A->e•, d])={
+  [S->ae•c, $],
+  [A->e•, d],
+}
+I6=GOTO(I3, A)=CLOSURE([S->bA•c, $])={
+  [S->bA•c, $]
+}
+I7=GOTO(I3, e)=CLOSURE([S->be•d, $], [A->e•, c])={
+  [S->be•d, $],
+  [A->e•, c],
+}
+I8=GOTO(I4, d)=CLOSURE([S->aAd•, $])={
+  [S->aAd•, $]
+}
+I9=GOTO(I5, c)=CLOSURE([S->aec•, $])={
+  [S->aec•, $]
+}
+I10=GOTO(I6, c)=CLOSURE([S->bAc•, $])={
+  [S->bAc•, $]
+}
+I11=GOTO(I7, d)=CLOSURE([S->bed•, $])={
+  [S->bed•, $]
+}
+```
+#figure(image("../../public/blog-resources/image-35.png"))
+
+如何处理?
+比如I5={[S->ae•c, \$], [A->e•, d],}
+- 若输入字符为c ==> 移进
+- 若输入字符为d ==> 使用A->e产生式规约
+
+LR(1)文法：若在SLR(1)分析的基础上使用LR(1)分析能解决冲突，则称该文法属于LR(1)文法
+
+
+LALR(1): 在LR(1)的基础上合并_同心集_
+
+如果合并后没有冲突，则该文法属于LALR(1)文法
+
+#figure(
+  image("../../public/blog-resources/image-36.png"),
+  caption: [
+    LR分析小结
+  ],
 )
