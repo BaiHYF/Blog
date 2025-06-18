@@ -593,5 +593,7 @@ LALR(1): 在LR(1)的基础上合并_同心集_
   image("../../public/blog-resources/image-36.png"),
   caption: [
     LR分析小结
+
+    LR(0)#sym.subset SLR #sym.subset LALR(1) #sym.subset LR(1)
   ],
 )
