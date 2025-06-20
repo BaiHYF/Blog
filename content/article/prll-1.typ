@@ -12,15 +12,14 @@
 
 = Ch01-Introduction
 
-Task parallelism
+Task parallelism[任务并行]
 - Partitionvarious tasks carried out solving the problem among the cores 任务并行是指将不同的任务或执行线程分配到多个核心上。
 
-
-Data parallelism
+Data parallelism[数据并行]
 - Partition the data used in solving gthe problem among the cores.数据并行是指在多个核心上对不同部分的数据执行相同的操作。
 - Eachcore carries out similaroperations on it's part of the data.
 
-Parallel Computing vs. Concurrent Computing
+Parallel Computing vs. Concurrent Computing [并行vs并发]
 + In parallel computing, execution occurs at the same physical instant
   - parallel computing is impossible on a (one-core) single processor
   - 在多个处理器或核心上同时执行多个计算任务。需要多核或多处理器系统。
@@ -67,14 +66,6 @@ Parallel Computing vs. Concurrent Computing
 - Instruction Level Parallelism (ILP)
   - Attempts to improve processor performance by having multiple processor components or functional units simultaneously executing instructions.
   - 即CPU同时执行多个指令，如流水线技术。
-
-#let q1 = [
-  Q: Can a single process run in multiple cores?
-  A: Yes, a single process can run multiple threads on different cores.
-
-  Q: Can a single thread run in multiple cores?
-  A: No. There is no such thing as a single thread running on multiple cores simultaneously. But the instructions from one thread can be executed in parallel(e.g. Instruction pipelining and out-of-order execution).
-]
 
 ```
 Q: Can a single process run in multiple cores?
@@ -162,7 +153,6 @@ A:
 
 ```
 Q: MPP和COW有何区别？
-
 A:
   1. MPP中节点高度集成，专为并行计算设计，通常没有独立操作系统，依赖全局调度和管理系统。
   2. COW中节点完全独立，各自运行操作系统和应用程序，节点间通过消息传递（如MPI）通信。

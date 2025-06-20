@@ -40,12 +40,13 @@ Shared Memory
 
 加速比:
 
-$p$ -- 线程数/核心数
+$p$ -- 线程数(核心数)
 
 $T_("serial")$ -- 原串行程序运行时间
 
 $T_("parallel")$ -- 并行化后程序运行时间
 
+在完全可并行化的程序中
 $T_("parallel") = T_("serial") / p$
 
 加速比 $S = T_("serial") / T_("parallel")$

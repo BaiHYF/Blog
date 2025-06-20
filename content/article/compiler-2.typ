@@ -303,6 +303,6 @@ _本环节内容由LLM辅助生成_
 
 最后看一道复杂一些的例题
 #figure(
-  image("../../public/blog-resources/image-21.png"),
+  image("../../public/blog-resources/image-23.png"),
   caption: [例题],
 )

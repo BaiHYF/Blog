@@ -138,11 +138,13 @@ void Get_input(
     printf("Enter number a, b, and n:\n");
     scanf("%lf %lf %d", a_p, b_p, n_p);
     for (dest = 1; dest < comm_sz; dest++) {
+      // send message from rank `0` to rank `dest`
       MPI_Send(a_p, 1, MPI_DOUBLE, dest, 0, MPI_COMM_WORLD);
       MPI_Send(b_p, 1, MPI_DOUBLE, dest, 0, MPI_COMM_WORLD);
       MPI_Send(n_p, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
     }
   } else {
+    // receive message from rank `0`
     MPI_Recv(a_p, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     MPI_Recv(b_p, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     MPI_Recv(n_p, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -150,12 +152,12 @@ void Get_input(
 } /* Get_input */
 ```
 
+_MPI_Unsafe_
 MPI_Send和MPI_Recv的不当使用可能导致死锁
 
 - `MPI_SendRecv`
   +在一个调用中同时完成发送和接收操作
   +发送和接收操作是原子的，避免了死锁风
-
 
 #figure(
   image("../../public/blog-resources/image-51.png"),
@@ -191,6 +193,7 @@ _树形通信_
   // 例子：计算所有进程的局部和
   int local_sum = ...;
   int global_sum;
+  // reduce the result to rank `0`
   MPI_Reduce(&local_sum, &global_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
   ```
 - 类似的有`MPI_Allreduce`。规约操作后结果广播到所有进程
@@ -337,7 +340,7 @@ void Get_input(int my_rank, int comm_sz, int *a_p, int *b_p, int *n_p) {
 == MPI性能评估
 
 - `MPI_Wtime`
-  World Time
+  World Clock Time
 - `MPI_Barrier`
   阻塞当前进程，等待所有进程都到达
   Ensures that no process will return from calling it until every process in the communicator has started calling it.
@@ -361,6 +364,7 @@ A:
 基本概念
 - 数据分布：假设有n个元素，均匀分布在p个处理器上（每个处理器约n/p个元素）
 - 比较方向：
+  _这里的元素下标从0开始_
   + 偶阶段（Even Phase）：比较相邻的(2i, 2i+1)元素对
   + 奇阶段（Odd Phase）：比较相邻的(2i+1, 2i+2)元素对
 
@@ -368,12 +372,12 @@ A:
 ```
 初始序列: [5, 3, 8, 1, 2]
 
-第1轮（偶阶段）:
+第1轮（偶阶段）: handle a[0], a[2], a[4]
   (5,3)→比较交换→[3,5,8,1,2]
   (8,1)→比较交换→[3,5,1,8,2]
   (2无配对)→保持→[3,5,1,8,2]
 
-第2轮（奇阶段）:
+第2轮（奇阶段）: handle a[1], a[3]
   (5,1)→比较交换→[3,1,5,8,2]
   (8,2)→比较交换→[3,1,5,2,8]
 
@@ -404,7 +408,7 @@ A:
 
 伪代码描述
 ```
-首先将被分配到本进程的子数组排好序 my_part
+首先将被分配到本进程的子数组排好序,排序后本地子数组为 my_part
 for (phase = 0; phase < comm_sz; phase++) {
   neighbour = compute_partner(phase, rank, comm_sz);
   if (当前进程可以找到neighbour) {
