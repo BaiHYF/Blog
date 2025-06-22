@@ -1,7 +1,7 @@
 
 #import "/typ/templates/blog.typ": *
 #show: main.with(
-  title: "Parallel Computing CheetSheet V",
+  title: "Parallel Computing CheetSheet VI",
   desc: [并行计算课程考试前的一些总结. Ch5],
   date: "2025-06-22",
   tags: (

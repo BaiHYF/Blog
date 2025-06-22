@@ -74,7 +74,7 @@
 - 设在程序中某点u引用了变量A的值，则把能到达u的A的所有定值点的全体，称为A在引用点u的引用-定值链，简称UD链。
 
 #figure(
-  image("../../public/blog-resources/image-14.png"),
+  image("../../public/blog-resources/image-15.png"),
   caption: [
     例题
     + 对该流图进行到达-定值数据流分析,假设B1的IN信息为∅,请将迭代结束时的结果填充在下表中
@@ -128,7 +128,7 @@ Answer: 正体为第一次循环得到,_斜体为第二次循环得到_
 - 即变量A在`u`被定义了，之后会在其他哪些地方被使用。
 
 #figure(
-  image("../../public/blog-resources/image-14.png"),
+  image("../../public/blog-resources/image-15.png"),
   caption: [
     例题
     + 对该流图进行活跃变量数据流分析，假设B7的LiveOut信息为∅，请将迭代结束时的结果填充在下表中
